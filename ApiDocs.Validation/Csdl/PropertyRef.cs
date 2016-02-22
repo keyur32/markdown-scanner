@@ -23,16 +23,15 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-namespace ApiDocs.Validation.OData
+namespace ApiDocs.Validation.Csdl
 {
-    using System.Collections.Generic;
     using System.Xml.Serialization;
 
-    [XmlRoot("DataServices", Namespace = ODataParser.EdmNamespace)]
-    public class DataServices
+    [XmlRoot("PropertyRef", Namespace = ODataParser.EdmNamespace)]
+    public class PropertyRef
     {
-        [XmlElement("Schema", Namespace = ODataParser.EdmNamespace)]
-        public List<Schema> Schemas { get; set; }
-      
+        [XmlAttribute("Name")]
+        public string Name { get; set; }
+
     }
 }

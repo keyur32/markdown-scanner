@@ -23,18 +23,18 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-namespace ApiDocs.Validation.OData
+namespace ApiDocs.Validation.Csdl
 {
     using System.Xml.Serialization;
 
-    [XmlRoot("Singleton", Namespace = ODataParser.EdmNamespace)]
-    public class Singleton
+    [XmlRoot("EntitySet", Namespace = ODataParser.EdmNamespace)]
+    public class EntitySet
     {
         [XmlAttribute("Name")]
         public string Name { get; set; }
 
-        [XmlAttribute("Type")]
-        public string Type { get; set; }
+        [XmlAttribute("EntityType")]
+        public string EntityType { get; set; }
 
     }
 }

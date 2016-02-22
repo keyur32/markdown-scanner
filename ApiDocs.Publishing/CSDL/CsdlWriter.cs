@@ -32,7 +32,7 @@ namespace ApiDocs.Publishing.CSDL
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
-    using ApiDocs.Validation.OData;
+    using ApiDocs.Validation.Csdl;
 
     public class CsdlWriter : DocumentPublisher
     {

@@ -23,15 +23,20 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-namespace ApiDocs.Validation.OData
+namespace ApiDocs.Validation.Csdl
 {
     using System.Xml.Serialization;
 
-    [XmlRoot("PropertyRef", Namespace = ODataParser.EdmNamespace)]
-    public class PropertyRef
+    /// <summary>
+    /// Function in OData is not allowed to modify data
+    /// or have side effects (must be idempotent). A 
+    /// function must return data back to the caller (ReturnType).
+    /// </summary>
+    [XmlRoot("Function", Namespace = ODataParser.EdmNamespace)]
+    public class Function : ActionOrFunctionBase
     {
-        [XmlAttribute("Name")]
-        public string Name { get; set; }
-
+        public Function() : base()
+        {
+        }
     }
 }

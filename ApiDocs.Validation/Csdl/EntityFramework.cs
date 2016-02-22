@@ -23,22 +23,41 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-namespace ApiDocs.Validation.OData
+namespace ApiDocs.Validation.Csdl
 {
+    using System;
     using System.Collections.Generic;
-    using System.ComponentModel;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using System.Xml.Linq;
     using System.Xml.Serialization;
 
-    [XmlRoot("Annotation", Namespace = ODataParser.EdmNamespace)]
-    public class Annotation
+    /// <summary>
+    /// Holds a representation of an entity framework model (EDMX)
+    /// </summary>
+    [XmlRoot("Edmx", Namespace = ODataParser.EdmxNamespace)]
+    public class EntityFramework
     {
-        [XmlAttribute("Term")]
-        public string Term { get; set; }
+        [XmlAttribute("Version")]
+        public string Version { get; set; }
 
-        [XmlAttribute("String"), DefaultValue(null)]
-        public string String { get; set; }
+        [XmlElement("DataServices")]
+        public DataServices DataServices { get; set; } 
 
-        [XmlElement("Record", Namespace = ODataParser.EdmNamespace), DefaultValue(null)]
-        public List<Record> Records { get; set; }
+        public EntityFramework()
+        {
+            this.DataServices = new DataServices();
+            this.DataServices.Schemas = new List<Csdl.Schema>();
+            this.Version = "4.0";
+        }
+
+        public EntityFramework(IEnumerable<Schema> schemas)
+        {
+            this.DataServices = new DataServices();
+            this.DataServices.Schemas = new List<Csdl.Schema>(schemas);
+            this.Version = "4.0";
+        }
+
     }
 }

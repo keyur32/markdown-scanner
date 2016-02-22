@@ -23,20 +23,40 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-namespace ApiDocs.Validation.OData
+namespace ApiDocs.Validation.Csdl
 {
+    using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Xml.Serialization;
 
-    /// <summary>
-    /// Function in OData is not allowed to modify data
-    /// or have side effects (must be idempotent). A 
-    /// function must return data back to the caller (ReturnType).
-    /// </summary>
-    [XmlRoot("Function", Namespace = ODataParser.EdmNamespace)]
-    public class Function : ActionOrFunctionBase
+    [XmlRoot("Property", Namespace = ODataParser.EdmNamespace)]
+    public class Property
     {
-        public Function() : base()
-        {
-        }
+        [XmlAttribute("Name")]
+        public string Name { get; set; }
+
+        [XmlAttribute("Type")]
+        public string Type { get; set; }
+
+        [XmlAttribute("Nullable"), DefaultValue(false)]
+        public bool Nullable { get; set; }
+
+        [XmlElement("Annotation", Namespace = ODataParser.EdmNamespace)]
+        public List<Annotation> Annotation { get; set; }
+
+
+        /// <summary>
+        /// Indicates that this property can be used in a $select query parameter
+        /// </summary>
+        [XmlIgnore]
+        public bool Selectable { get; set; }
+
+        /// <summary>
+        /// Indicates this property can be used in a $filter query parameter
+        /// </summary>
+        [XmlIgnore]
+        public bool Filterable { get; set; }
+
+
     }
 }

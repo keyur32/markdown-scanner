@@ -23,12 +23,18 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-namespace ApiDocs.Validation.OData
+namespace ApiDocs.Validation.Csdl
 {
+    using System.Collections.Generic;
     using System.Xml.Serialization;
 
-    [XmlRoot("Parameter", Namespace = ODataParser.EdmNamespace)]
-    public class Parameter
+    /*
+       <Term Name="sourceUrl" Type="Edm.String" AppliesTo="oneDrive.item">
+            <Annotation Term="Org.OData.Core.V1.LongDescription" String="When used on a PUT or POST call to an Item, causes the item's content to be copied from the URL specified in the attribute."/>
+       </Term>
+     */
+    [XmlRoot("Term", Namespace = ODataParser.EdmNamespace)]
+    public class Term
     {
         [XmlAttribute("Name")]
         public string Name { get; set; }
@@ -36,8 +42,23 @@ namespace ApiDocs.Validation.OData
         [XmlAttribute("Type")]
         public string Type { get; set; }
 
-        [XmlAttribute("Nullable")]
-        public bool Nullable { get; set; }
-        
+        [XmlAttribute("AppliesTo")]
+        public string AppliesTo { get; set; }
+
+        [XmlElement("Annotation", Namespace = ODataParser.EdmNamespace)]
+        public List<Annotation> Annotations { get; set; }
+
+        public Term()
+        {
+            this.Annotations = new List<Annotation>();
+        }
+
+        public const string DescriptionTerm = "Org.OData.Core.V1.Description";
+        public const string LongDescriptionTerm = "Org.OData.Core.V1.LongDescription";
+        public const string ExpandRestrictionsTerm = "Org.OData.Capabilities.V1.ExpandRestrictions";
+        public const string SearchRestrictionsTerm = "Org.OData.Capabilities.V1.SearchRestrictions";
+        public const string ChangeTrackingTerm = "Org.OData.Capabilities.V1.ChangeTracking";
+        public const string NavigationRestrictionsTerm = "Org.OData.Capabilities.V1.NavigationRestrictions";
+
     }
 }

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace ApiDocs.Validation.OData
+namespace ApiDocs.Validation.Csdl
 {
     [XmlRoot("Annotations", Namespace = ODataParser.EdmNamespace)]
     public class Annotations

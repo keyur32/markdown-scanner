@@ -38,7 +38,7 @@ namespace ApiDocs.ConsoleApp
     using ApiDocs.Validation.Error;
     using ApiDocs.Validation.Http;
     using ApiDocs.Validation.Json;
-    using ApiDocs.Validation.OData;
+    using ApiDocs.Validation.Csdl;
     using ApiDocs.Validation.Params;
     using ApiDocs.Validation.Writers;
     using CommandLine;

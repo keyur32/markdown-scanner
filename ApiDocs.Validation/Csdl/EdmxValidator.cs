@@ -43,11 +43,11 @@ namespace ApiDocs.Validation
         /// <param name="edmx"></param>
         /// <param name="docs"></param>
         /// <returns></returns>
-        public static ValidationError[] CompareResourceDefinitions(OData.EntityFramework edmx, DocSet docs, Json.ValidationOptions options = null)
+        public static ValidationError[] CompareResourceDefinitions(Csdl.EntityFramework edmx, DocSet docs, Json.ValidationOptions options = null)
         {
             List<ValidationError> errors = new List<ValidationError>();
 
-            ResourceDefinition[] generatedResources = OData.ODataParser.GenerateResourcesFromSchemas(edmx);
+            ResourceDefinition[] generatedResources = Csdl.ODataParser.GenerateResourcesFromSchemas(edmx);
             foreach (var resource in generatedResources)
             {
                 // Validate this resource vs. our docs
@@ -80,7 +80,7 @@ namespace ApiDocs.Validation
         /// <param name="docs"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static ValidationError[] CompareRestPathDefinitions(OData.EntityFramework edmx, DocSet docs, Json.ValidationOptions options = null)
+        public static ValidationError[] CompareRestPathDefinitions(Csdl.EntityFramework edmx, DocSet docs, Json.ValidationOptions options = null)
         {
             throw new NotImplementedException();
         }

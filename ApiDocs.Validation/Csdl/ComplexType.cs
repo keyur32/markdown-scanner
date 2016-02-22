@@ -23,51 +23,66 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-namespace ApiDocs.Validation.OData
+namespace ApiDocs.Validation.Csdl
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Linq;
+    using System.Xml.Linq;
     using System.Xml.Serialization;
 
-    [XmlRoot("EntityType", Namespace = ODataParser.EdmNamespace)]
-    public class EntityType : ComplexType, IODataNavigable
+    [XmlRoot("ComplexType", Namespace = ODataParser.EdmNamespace)]
+    public class ComplexType : IODataNavigable
     {
-        public EntityType()
+        public ComplexType()
         {
             this.Properties = new List<Property>();
-            this.NavigationProperties = new List<NavigationProperty>();
         }
 
-        [XmlElement("Key", Namespace = ODataParser.EdmNamespace)]
-        public Key Key { get; set; }
+        [XmlAttribute("Name")]
+        public string Name { get; set; }
 
-        [XmlElement("NavigationProperty", Namespace = ODataParser.EdmNamespace)]
-        public List<NavigationProperty> NavigationProperties { get; set; }
+        [XmlAttribute("OpenType"), DefaultValue(false)]
+        public bool OpenType { get; set; }
 
 
-        public override IODataNavigable NavigateByUriComponent(string component, EntityFramework edmx)
+
+        [XmlElement("Property", Namespace = ODataParser.EdmNamespace)]
+        public List<Property> Properties { get; set; }
+
+
+        public virtual IODataNavigable NavigateByEntityTypeKey(EntityFramework edmx)
         {
-            var navigationPropertyMatch = (from n in this.NavigationProperties
-                                           where n.Name == component
-                                           select n).FirstOrDefault();
-            if (null != navigationPropertyMatch)
+            if (this.OpenType)
             {
-                var identifier = navigationPropertyMatch.Type;
+                // TODO: This isn't illegal, but we don't know what you're going to get back anyway, so we just treat it the same for now.
+            }
+            throw new NotSupportedException("ComplexType cannot be navigated by key.");
+        }
+
+        public virtual IODataNavigable NavigateByUriComponent(string component, EntityFramework edmx)
+        {
+            var propertyMatch = (from p in this.Properties
+                where p.Name == component
+                select p).FirstOrDefault();
+            if (null != propertyMatch)
+            {
+                var identifier = propertyMatch.Type;
                 if (identifier.StartsWith("Collection("))
                 {
                     var innerId = identifier.Substring(11, identifier.Length - 12);
                     return new ODataCollection(innerId);
                 }
-                return edmx.LookupNavigableType(identifier);
+                return edmx.ResourceWithIdentifier<IODataNavigable>(identifier);
             }
 
-            return base.NavigateByUriComponent(component, edmx);
+            return null;
         }
 
-        public override IODataNavigable NavigateByEntityTypeKey(EntityFramework edmx)
+        public string TypeIdentifier
         {
-            throw new NotImplementedException();
+            get { return Name; }
         }
     }
 }

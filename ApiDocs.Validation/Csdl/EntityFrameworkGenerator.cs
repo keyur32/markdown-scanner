@@ -1,12 +1,12 @@
 ﻿using ApiDocs.Validation;
-using ApiDocs.Validation.OData;
+using ApiDocs.Validation.Csdl;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ApiDocs.Validation.OData
+namespace ApiDocs.Validation.Csdl
 {
     public class EntityFrameworkGenerator
     {
@@ -190,11 +190,11 @@ namespace ApiDocs.Validation.OData
             ActionOrFunctionBase target = null;
             if (methodCollection.AllMethodsIdempotent)
             {
-                target = new Validation.OData.Function();
+                target = new Validation.Csdl.Function();
             }
             else
             {
-                target = new Validation.OData.Action();
+                target = new Validation.Csdl.Action();
             }
 
             var schemaName = requestTarget.Name.NamespaceOnly();
@@ -221,7 +221,7 @@ namespace ApiDocs.Validation.OData
             if (target is Function)
                 schema.Functions.Add((Function)target);
             else
-                schema.Actions.Add((Validation.OData.Action)target);
+                schema.Actions.Add((Validation.Csdl.Action)target);
         }
 
         /// <summary>

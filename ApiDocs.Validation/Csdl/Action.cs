@@ -23,16 +23,44 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-namespace ApiDocs.Validation.OData
+namespace ApiDocs.Validation.Csdl
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Xml.Linq;
     using System.Xml.Serialization;
 
-    [XmlRoot("Key", Namespace = ODataParser.EdmNamespace)]
-    public class Key
+    /// <summary>
+    /// Action in OData is allowed to modify data on the 
+    /// server (can have side-effects). Action does not have to
+    /// return data.
+    /// </summary>
+    [XmlRoot("Action", Namespace = ODataParser.EdmNamespace)]
+    public class Action : ActionOrFunctionBase
     {
-        [XmlElement("PropertyRef", Namespace = ODataParser.EdmNamespace)]
-        public PropertyRef PropertyRef { get; set; }
+        public Action() : base()
+        {
+        }
     }
 
-    
+    public class ActionOrFunctionBase
+    {
+        [XmlAttribute("Name")]
+        public string Name { get; set; }
+
+        [XmlAttribute("IsBound")]
+        public bool IsBound { get; set; }
+
+        [XmlElement("Parameter")]
+        public List<Parameter> Parameters { get; set; }
+
+        [XmlElement("ReturnType")]
+        public ReturnType ReturnType { get; set; }
+
+        protected ActionOrFunctionBase()
+        {
+            this.Parameters = new List<Parameter>();
+        }
+    }
 }
