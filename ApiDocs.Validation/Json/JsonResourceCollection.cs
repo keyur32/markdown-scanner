@@ -134,7 +134,7 @@ namespace ApiDocs.Validation.Json
             }
 
             schemaErrors = newErrors.ToArray();
-            return !schemaErrors.WereWarningsOrErrors();
+            return !schemaErrors.AnyWarningsOrErrors();
 
         }
 

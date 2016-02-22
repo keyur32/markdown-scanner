@@ -950,7 +950,7 @@ namespace ApiDocs.Validation
             }
             errors = foundErrors.ToArray();
             linkedDocFiles = linkedPages.Distinct().ToArray();
-            return !(errors.WereErrors() || errors.WereWarnings());
+            return !(errors.AnyErrors() || errors.AnyWarnings());
         }
 
         protected enum LinkValidationResult

@@ -29,6 +29,7 @@ namespace ApiDocs.Validation
     using System.Collections.Generic;
     using System.Linq;
     using System;
+    using Csdl;
 
     /// <summary>
     /// Provides capabilities to validation an EntityFramework and DocSet match.
@@ -82,7 +83,9 @@ namespace ApiDocs.Validation
         /// <returns></returns>
         public static ValidationError[] CompareRestPathDefinitions(Csdl.EntityFramework edmx, DocSet docs, Json.ValidationOptions options = null)
         {
-            throw new NotImplementedException();
+            var source = EntityFrameworkGenerator.Generate(docs, null, null);
+            CsdlComparer comparer = new CsdlComparer();
+            return comparer.CompareFrameworks(source, edmx);
         }
     }
 }

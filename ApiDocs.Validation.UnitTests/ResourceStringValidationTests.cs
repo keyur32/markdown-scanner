@@ -43,7 +43,7 @@ namespace ApiDocs.Validation.UnitTests
             ValidationError[] detectedErrors;
             testFile.Scan(out detectedErrors);
 
-            Assert.IsFalse(detectedErrors.WereWarningsOrErrors(), "Detected warnings or errors when reading the example markdown file.");
+            Assert.IsFalse(detectedErrors.AnyWarningsOrErrors(), "Detected warnings or errors when reading the example markdown file.");
             
             return testFile;
         }
@@ -85,7 +85,7 @@ namespace ApiDocs.Validation.UnitTests
             bool result = schema.ValidateExpectedResponse(method, out detectedErrors);
 
             Assert.IsFalse(result);
-            Assert.IsTrue(detectedErrors.WereErrors());
+            Assert.IsTrue(detectedErrors.AnyErrors());
 
             Assert.IsNotNull(detectedErrors.SingleOrDefault(x => x.Code == ValidationErrorCode.ExpectedTypeDifferent));
         }
@@ -107,7 +107,7 @@ namespace ApiDocs.Validation.UnitTests
             bool result = schema.ValidateExpectedResponse(method, out detectedErrors);
 
             Assert.IsFalse(result);
-            Assert.IsTrue(detectedErrors.WereErrors());
+            Assert.IsTrue(detectedErrors.AnyErrors());
 
             Assert.IsNotNull(detectedErrors.SingleOrDefault(x => x.Code == ValidationErrorCode.InvalidEnumeratedValueString));
         }
@@ -129,7 +129,7 @@ namespace ApiDocs.Validation.UnitTests
             bool result = schema.ValidateExpectedResponse(method, out detectedErrors);
 
             Assert.IsFalse(result);
-            Assert.IsTrue(detectedErrors.WereErrors());
+            Assert.IsTrue(detectedErrors.AnyErrors());
 
             Assert.IsNotNull(detectedErrors.SingleOrDefault(x => x.Code == ValidationErrorCode.InvalidUrlString));
         }

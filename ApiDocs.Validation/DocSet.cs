@@ -384,7 +384,7 @@ namespace ApiDocs.Validation
                                  select new ValidationWarning(ValidationErrorCode.OrphanedDocumentPage, null, "Page {0} has no incoming links.", o.Key));
 
             errors = foundErrors.ToArray();
-            return !errors.WereWarningsOrErrors();
+            return !errors.AnyWarningsOrErrors();
         }
 
         /// <summary>

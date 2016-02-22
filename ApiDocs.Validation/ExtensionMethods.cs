@@ -147,17 +147,17 @@ namespace ApiDocs.Validation
             return reader.ReadLine();
         }
 
-        public static bool WereErrors(this IEnumerable<ValidationError> errors)
+        public static bool AnyErrors(this IEnumerable<ValidationError> errors)
         {
             return errors.Any(x => x.IsError);
         }
 
-        public static bool WereWarnings(this IEnumerable<ValidationError> errors)
+        public static bool AnyWarnings(this IEnumerable<ValidationError> errors)
         {
             return errors.Any(x => x.IsWarning);
         }
 
-        public static bool WereWarningsOrErrors(this IEnumerable<ValidationError> errors)
+        public static bool AnyWarningsOrErrors(this IEnumerable<ValidationError> errors)
         {
             return errors.Any(x => x.IsError || x.IsWarning);
         }

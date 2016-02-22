@@ -1162,7 +1162,8 @@ namespace ApiDocs.ConsoleApp
             const string testname = "validate-service-metadata-resources";
             TestReport.StartTest(testname);
 
-            var errors = EdmxValidator.CompareResourceDefinitions(edmx, docSet, new ValidationOptions { RelaxedStringValidation = true });
+            //var errors = EdmxValidator.CompareResourceDefinitions(edmx, docSet, new ValidationOptions { RelaxedStringValidation = true });
+            var errors = EdmxValidator.CompareRestPathDefinitions(edmx, docSet, new ValidationOptions { RelaxedStringValidation = true });
 
             await WriteOutErrorsAndFinishTestAsync(errors, options.SilenceWarnings, successMessage: " no errors.", testName: testname);
         }

@@ -179,9 +179,9 @@ namespace ApiDocs.Validation
             // TODO: If the method is defined as a long running operation, we need to go poll the status 
             // URL to make sure that the operation finished and the response type is valid.
 
-            if (errors.WereErrors())
+            if (errors.AnyErrors())
                 results.SetOutcome(actionName, ValidationOutcome.Error);
-            else if (errors.WereWarnings())
+            else if (errors.AnyWarnings())
                 results.SetOutcome(actionName, ValidationOutcome.Warning);
             else
                 results.SetOutcome(actionName, ValidationOutcome.Passed);

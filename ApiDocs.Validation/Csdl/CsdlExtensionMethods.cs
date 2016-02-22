@@ -67,5 +67,11 @@ namespace ApiDocs.Validation.Csdl
                 sb.Append(text);
             }
         }
+
+
+        public static Error.ValidationError[] Compare(this Schema source, Schema remote)
+        {
+
+        }
     }
 }

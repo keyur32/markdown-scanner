@@ -51,11 +51,11 @@ namespace ApiDocs.ConsoleApp
         public void IncrementResultCount(IEnumerable<ValidationError> output)
         {
             var errors = output as ValidationError[] ?? output.ToArray();
-            if (errors.WereErrors())
+            if (errors.AnyErrors())
             {
                 this.FailureCount++;
             }
-            else if (errors.WereWarnings())
+            else if (errors.AnyWarnings())
             {
                 this.WarningCount++;
             }
