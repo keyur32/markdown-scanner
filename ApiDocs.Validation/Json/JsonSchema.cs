@@ -257,7 +257,7 @@ namespace ApiDocs.Validation.Json
             this.CleanMissingProperties(options, missingProperties);
             if (missingProperties.Count > 0)
             {
-                detectedErrors.Add(new ValidationError(ValidationErrorCode.RequiredPropertiesMissing, null, "Missing properties: response was missing these required properties: {0}", missingProperties.ComponentsJoinedByString(", ")));
+                detectedErrors.Add(new ValidationError(ValidationErrorCode.RequiredPropertiesMissing, null, "Missing required properties: {0}", missingProperties.ComponentsJoinedByString(", ")));
             }
         }
 

@@ -1103,7 +1103,7 @@ namespace ApiDocs.ConsoleApp
         }
 
 
-        private static async Task<List<Schema>> TryGetMetadataSchemasAsync(CheckMetadataOptions options)
+        private static async Task<EntityFramework> TryGetMetadataSchemasAsync(CheckMetadataOptions options)
         {
             if (string.IsNullOrEmpty(options.ServiceMetadataLocation))
             {
@@ -1132,7 +1132,7 @@ namespace ApiDocs.ConsoleApp
                 return null;
             }
 
-            return edmx.DataServices.Schemas;
+            return edmx;
         }
 
         /// <summary>
@@ -1140,89 +1140,31 @@ namespace ApiDocs.ConsoleApp
         /// </summary>
         /// <param name="options"></param>
         /// <returns></returns>
-        private static async Task<bool> CheckServiceMetadataAsync(CheckMetadataOptions options)
+        private static async Task CheckServiceMetadataAsync(CheckMetadataOptions options)
         {
-            List<Schema> schemas = await TryGetMetadataSchemasAsync(options);
-            if (null == schemas)
-                return false;
+            var edmx = await TryGetMetadataSchemasAsync(options);
+            if (null == edmx)
+            {
+                FancyConsole.WriteLine(FancyConsole.ConsoleErrorColor, "Unable to read service metadata.");
+                return;
+            }
 
-            FancyConsole.WriteLine(FancyConsole.ConsoleSuccessColor, "  found {0} schema definitions: {1}", schemas.Count, (from s in schemas select s.Namespace).ComponentsJoinedByString(", "));
+            var schemas = edmx.DataServices.Schemas;
+            FancyConsole.WriteLine(FancyConsole.ConsoleSuccessColor, "  found {0} schema definitions.", schemas.Count);
 
             var docSet = await GetDocSetAsync(options);
             if (null == docSet)
-                return false;
+            {
+                FancyConsole.WriteLine(FancyConsole.ConsoleErrorColor, "Unable to read documentation.");
+                return;
+            }
 
-            const string testname = "validate-service-metadata";
+            const string testname = "validate-service-metadata-resources";
             TestReport.StartTest(testname);
 
-            List<ResourceDefinition> foundResources = ODataParser.GenerateResourcesFromSchemas(schemas);
-            CheckResults results = new CheckResults();
+            var errors = EdmxValidator.CompareResourceDefinitions(edmx, docSet, new ValidationOptions { RelaxedStringValidation = true });
 
-            List<ValidationError> collectedErrors = new List<ValidationError>();
-
-            foreach (var resource in foundResources)
-            {
-                FancyConsole.WriteLine();
-                FancyConsole.Write(FancyConsole.ConsoleHeaderColor, "Checking metadata resource: {0}...", resource.Name);
-
-                FancyConsole.VerboseWriteLine();
-                FancyConsole.VerboseWriteLine(resource.ExampleText);
-                FancyConsole.VerboseWriteLine();
-
-                // Check if this resource exists in the documentation at all
-                ResourceDefinition matchingDocumentationResource = null;
-                    var docResourceQuery =
-                        from r in docSet.Resources
-                        where r.Name == resource.Name
-                        select r;
-                    matchingDocumentationResource = docResourceQuery.FirstOrDefault();
-                if (docResourceQuery.Count() > 1)
-                {
-                    // Log an error about multiple resource definitions
-                    FancyConsole.WriteLine("Multiple resource definitions for resource {0} in files:", resource.Name);
-                    foreach (var q in docResourceQuery)
-                    {
-                        FancyConsole.WriteLine(q.SourceFile.DisplayName);
-                    }
-                }
-
-
-                ValidationError[] errors;
-                if (null == matchingDocumentationResource)
-                {
-                    // Couldn't find this resource in the documentation!
-                    errors = new ValidationError[]
-                    {
-                        new ValidationError(
-                            ValidationErrorCode.ResourceTypeNotFound,
-                            null,
-                            "Resource {0} is not in the documentation.",
-                            resource.Name)
-                    };
-                }
-                else
-                {
-                    // Verify that this resource matches the documentation
-                    docSet.ResourceCollection.ValidateJsonExample(resource.OriginalMetadata, resource.ExampleText, out errors, new ValidationOptions { RelaxedStringValidation = true });
-                }
-                
-                results.IncrementResultCount(errors);
-                collectedErrors.AddRange(errors);
-
-                await WriteOutErrorsAndFinishTestAsync(errors, options.SilenceWarnings, successMessage: " no errors.");
-            }
-
-            if (options.IgnoreWarnings)
-            {
-                results.ConvertWarningsToSuccess();
-            }
-
-            var output = (from e in collectedErrors select e.ErrorText).ComponentsJoinedByString("\r\n");
-
-            await TestReport.FinishTestAsync(testname, results.WereFailures ? TestOutcome.Failed : TestOutcome.Passed, stdOut:output);
-
-            results.PrintToConsole();
-            return !results.WereFailures;
+            await WriteOutErrorsAndFinishTestAsync(errors, options.SilenceWarnings, successMessage: " no errors.", testName: testname);
         }
     }
 

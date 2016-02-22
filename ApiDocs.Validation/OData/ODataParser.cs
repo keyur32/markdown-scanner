@@ -106,63 +106,63 @@ namespace ApiDocs.Validation.OData
         /// </summary>
         /// <param name="schemas"></param>
         /// <returns></returns>
-        public static List<ResourceDefinition> GenerateResourcesFromSchemas(IEnumerable<Schema> schemas)
+        public static ResourceDefinition[] GenerateResourcesFromSchemas(EntityFramework edmx)
         {
             List<ResourceDefinition> resources = new List<ResourceDefinition>();
             
-            foreach (var schema in schemas)
+            foreach (var schema in edmx.DataServices.Schemas)
             {
-                resources.AddRange(CreateResourcesFromSchema(schema, schemas));
+                resources.AddRange(CreateResourcesFromSchema(schema, edmx));
             }
 
-            return resources;
+            return resources.ToArray();
         }
 
-        private static IEnumerable<ResourceDefinition> CreateResourcesFromSchema(Schema schema, IEnumerable<Schema> otherSchema)
+        private static IEnumerable<ResourceDefinition> CreateResourcesFromSchema(Schema schema, EntityFramework edmx)
         {
             List<ResourceDefinition> resources = new List<ResourceDefinition>();
 
-            resources.AddRange(from ct in schema.ComplexTypes select ResourceDefinitionFromType(schema, otherSchema, ct));
-            resources.AddRange(from et in schema.Entities select ResourceDefinitionFromType(schema, otherSchema, et));
+            resources.AddRange(from ct in schema.ComplexTypes select ResourceDefinitionFromType(schema, edmx, ct));
+            resources.AddRange(from et in schema.Entities select ResourceDefinitionFromType(schema, edmx, et));
 
             return resources;
         }
 
-        private static ResourceDefinition ResourceDefinitionFromType(Schema schema, IEnumerable<Schema> otherSchema, ComplexType ct)
+        private static ResourceDefinition ResourceDefinitionFromType(Schema schema, EntityFramework edmx, ComplexType ct)
         {
             var annotation = new CodeBlockAnnotation() { ResourceType = string.Concat(schema.Namespace, ".", ct.Name), BlockType = CodeBlockType.Resource };
-            var json = BuildJsonExample(ct, otherSchema);
+            var json = BuildJsonExample(ct, edmx);
             ResourceDefinition rd = new JsonResourceDefinition(annotation, json, null);
             return rd;
         }
 
-        private static string BuildJsonExample(ComplexType ct, IEnumerable<Schema> otherSchema)
+        private static string BuildJsonExample(ComplexType ct, EntityFramework edmx)
         {
-            Dictionary<string, object> dict = BuildDictionaryExample(ct, otherSchema);
+            Dictionary<string, object> dict = BuildDictionaryExample(ct, edmx);
             return JsonConvert.SerializeObject(dict);
         }
 
-        private static Dictionary<string, object> BuildDictionaryExample(ComplexType ct, IEnumerable<Schema> otherSchema)
+        private static Dictionary<string, object> BuildDictionaryExample(ComplexType ct, EntityFramework edmx)
         {
-            return ct.Properties.Where(prop => prop.Type != "Edm.Stream").ToDictionary(prop => prop.Name, prop => ExampleOfType(prop.Type, otherSchema));
+            return ct.Properties.Where(prop => prop.Type != "Edm.Stream").ToDictionary(prop => prop.Name, prop => ExampleOfType(prop.Type, edmx));
         }
 
         private static readonly string CollectionPrefix = "Collection(";
-        private static object ExampleOfType(string typeIdentifier, IEnumerable<Schema> otherSchemas)
+        private static object ExampleOfType(string typeIdentifier, EntityFramework edmx)
         {
             if (typeIdentifier.StartsWith(CollectionPrefix) && typeIdentifier.EndsWith(")"))
             {
                 var arrayTypeIdentifier = typeIdentifier.Substring(CollectionPrefix.Length);
                 arrayTypeIdentifier = arrayTypeIdentifier.Substring(0, arrayTypeIdentifier.Length - 1);
 
-                var obj = ObjectExampleForType(arrayTypeIdentifier, otherSchemas);
+                var obj = ObjectExampleForType(arrayTypeIdentifier, edmx);
                 return new object[] { obj, obj };
             }
 
-            return ObjectExampleForType(typeIdentifier, otherSchemas);
+            return ObjectExampleForType(typeIdentifier, edmx);
         }
 
-        private static object ObjectExampleForType(string typeIdentifier, IEnumerable<Schema> otherSchemas)
+        private static object ObjectExampleForType(string typeIdentifier, EntityFramework edmx)
         {
             if (ODataSimpleTypeExamples.ContainsKey(typeIdentifier))
                 return ODataSimpleTypeExamples[typeIdentifier];
@@ -172,7 +172,7 @@ namespace ApiDocs.Validation.OData
             ComplexType matchingType = null;
             try
             {
-                matchingType = otherSchemas.ResourceWithIdentifier<ComplexType>(typeIdentifier);
+                matchingType = edmx.ResourceWithIdentifier<ComplexType>(typeIdentifier);
             }
             catch (Exception ex)
             {
@@ -185,7 +185,7 @@ namespace ApiDocs.Validation.OData
                 return new { datatype = typeIdentifier };
             }
             else
-                return BuildDictionaryExample(matchingType, otherSchemas);
+                return BuildDictionaryExample(matchingType, edmx);
         }
 
         #endregion
