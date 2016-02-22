@@ -26,7 +26,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ApiDocs.Publishing.CSDL
+namespace ApiDocs.Validation.OData
 {
     /// <summary>
     /// Wrapper around a collection of methods that operate on the same REST path.

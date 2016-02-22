@@ -23,7 +23,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-namespace ApiDocs.Publishing.CSDL
+namespace ApiDocs.Validation.OData
 {
     using ApiDocs.Validation;
     using System;
